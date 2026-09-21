@@ -65,6 +65,23 @@ map('n', '<leader>sh', function() require('mini.pick').builtin.help() end, { des
 require('mini.pick').setup()
 require('mini.extra').setup()
 require('mini.files').setup()
+
+local function git_signs_available()
+  if vim.fn.executable('git') ~= 1 then return false end
+  local result = vim.system({ 'git', '--version' }, { text = true }):wait()
+  if result.code ~= 0 then return false end
+  local major, minor = (result.stdout or ''):match('git version (%d+)%.(%d+)')
+  major, minor = tonumber(major), tonumber(minor)
+  return major ~= nil and (major > 2 or (major == 2 and minor >= 38))
+end
+
+local git_signs_ok = git_signs_available()
+if git_signs_ok then
+  require('mini.diff').setup({
+    view = { style = 'sign', signs = { add = '▎', change = '▎', delete = '▸' } },
+    mappings = { apply = '', reset = '', textobject = '', goto_first = '', goto_prev = '', goto_next = '', goto_last = '' },
+  })
+end
 require('mini.statusline').setup()
 require('mini.completion').setup({ delay = { completion = 250, info = 250, signature = 150 } })
 local clue = require('mini.clue')
@@ -309,7 +326,7 @@ map('n', '<leader>cd', vim.diagnostic.open_float, { desc = 'Show diagnostic' })
 
 vim.api.nvim_create_user_command('TinyHealth', function()
   local version = vim.version()
-  local lines = { ('Neovim %d.%d.%d'):format(version.major, version.minor, version.patch), 'rg: ' .. (vim.fn.executable('rg') == 1 and 'ok' or 'missing') }
+  local lines = { ('Neovim %d.%d.%d'):format(version.major, version.minor, version.patch), 'rg: ' .. (vim.fn.executable('rg') == 1 and 'ok' or 'missing'), 'Git line signs: ' .. (git_signs_ok and 'ready' or 'needs Git 2.38+') }
   for _, name in ipairs({ 'rust_analyzer', 'gopls', 'ts_ls', 'pyright' }) do
     local config = servers[name]
     lines[#lines + 1] = name .. ': ' .. (vim.fn.executable(config.cmd[1]) == 1 and 'ok' or 'missing')

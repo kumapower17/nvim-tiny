@@ -10,7 +10,7 @@ elif [[ $# -ne 0 ]]; then
   exit 2
 fi
 
-for file in config/init.lua config/CHEATSHEET.md vendor/mini.nvim/VERSION vendor/mini.nvim/LICENSE vendor/mini.nvim/lua/mini/pick.lua vendor/mini.nvim/lua/mini/extra.lua; do
+for file in config/init.lua config/CHEATSHEET.md vendor/mini.nvim/VERSION vendor/mini.nvim/LICENSE vendor/mini.nvim/lua/mini/pick.lua vendor/mini.nvim/lua/mini/extra.lua vendor/mini.nvim/lua/mini/diff.lua; do
   [[ -f "$repo_dir/$file" ]] || { echo "Missing $file; use a complete checkout" >&2; exit 1; }
 done
 if [[ $(uname -s) != Linux ]]; then
