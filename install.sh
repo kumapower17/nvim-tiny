@@ -10,7 +10,7 @@ elif [[ $# -ne 0 ]]; then
   exit 2
 fi
 
-for file in config/init.lua config/CHEATSHEET.md vendor/mini.nvim/VERSION vendor/mini.nvim/LICENSE vendor/mini.nvim/lua/mini/pick.lua; do
+for file in config/init.lua config/CHEATSHEET.md vendor/mini.nvim/VERSION vendor/mini.nvim/LICENSE vendor/mini.nvim/lua/mini/pick.lua vendor/mini.nvim/lua/mini/extra.lua; do
   [[ -f "$repo_dir/$file" ]] || { echo "Missing $file; use a complete checkout" >&2; exit 1; }
 done
 if [[ $(uname -s) != Linux ]]; then
@@ -59,11 +59,16 @@ fi
 echo "Using existing rg: $(command -v rg)"
 
 copy_plugin=1
-if [[ -f "$plugin_dir/.nvim-tiny-version" && -f "$plugin_dir/lua/mini/pick.lua" ]]; then
-  if [[ $(cat "$plugin_dir/.nvim-tiny-version") == "$mini_version" ]]; then
-    copy_plugin=0
-    echo "Using existing $mini_version plugin"
-  fi
+if [[ -d "$plugin_dir" ]]; then
+  copy_plugin=0
+  while IFS= read -r -d '' source; do
+    relative=${source#"$repo_dir/vendor/mini.nvim/"}
+    if [[ ! -f "$plugin_dir/$relative" ]] || ! cmp -s "$source" "$plugin_dir/$relative"; then
+      copy_plugin=1
+      break
+    fi
+  done < <(find "$repo_dir/vendor/mini.nvim" -type f -print0)
+  if [[ $copy_plugin -eq 0 ]]; then echo "Using existing $mini_version plugin"; fi
 fi
 
 copy_config=1

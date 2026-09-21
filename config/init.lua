@@ -63,6 +63,7 @@ map('n', '<leader>fb', function() require('mini.pick').builtin.buffers() end, { 
 map('n', '<leader>sh', function() require('mini.pick').builtin.help() end, { desc = 'Find help' })
 
 require('mini.pick').setup()
+require('mini.extra').setup()
 require('mini.files').setup()
 require('mini.statusline').setup()
 require('mini.completion').setup({ delay = { completion = 250, info = 250, signature = 150 } })
@@ -282,6 +283,21 @@ for name, config in pairs(servers) do
     vim.lsp.enable(name)
   end
 end
+
+local function search_symbols(scope, method)
+  if #vim.lsp.get_clients({ bufnr = 0, method = method }) == 0 then
+    vim.notify('No language server for symbol search. See :TinyHealth', vim.log.levels.WARN)
+    return
+  end
+  require('mini.extra').pickers.lsp({ scope = scope })
+end
+
+map('n', '<leader>ss', function()
+  search_symbols('document_symbol', 'textDocument/documentSymbol')
+end, { desc = 'Symbols in current file' })
+map('n', '<leader>sS', function()
+  search_symbols('workspace_symbol_live', 'workspace/symbol')
+end, { desc = 'Symbols in project' })
 
 map('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
 map('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
