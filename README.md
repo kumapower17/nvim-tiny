@@ -17,7 +17,7 @@ bash install.sh
 
 更新时在仓库运行 `git pull`，再运行 `bash install.sh --force`。仓库中 `vendor/mini.nvim` 固定为 [mini.nvim v0.18.0](https://github.com/nvim-mini/mini.nvim/releases/tag/v0.18.0) 的五个模块和对应帮助文档，许可证保留在 [vendor/mini.nvim/LICENSE](vendor/mini.nvim/LICENSE)。
 
-首次打开运行 `:Tutor` 学键位，之后运行 `:Keys` 打开[中文速查表](config/CHEATSHEET.md)。按空格、`g`、`z` 或 `Ctrl-w` 后稍停会出现后续键位提示。常用入口与 [LazyVim 键位](https://www.lazyvim.org/keymaps) 对齐：`<Space>ff` 找文件、`<Space>sg` 搜内容、`<Space>e` 浏览目录、`<Space>ft` 打开项目终端、`<Space>tT` 运行项目测试、`<Space>cf` 格式化。`:Root` 切换项目根目录，`:TinyHealth` 检查外部命令。代码位置书签用 `mA` 设置、`` `A `` 跳转、`<Space>sm` 浏览列表；大写书签退出后保留。
+首次打开运行 `:Tutor` 学键位，之后运行 `:Keys` 打开[中文速查表](config/CHEATSHEET.md)。按空格、`g`、`z` 或 `Ctrl-w` 后稍停会出现后续键位提示。常用入口与 [LazyVim 键位](https://www.lazyvim.org/keymaps) 对齐：`<Space>ff` 模糊找文件、`<Space>sg` 搜内容、`<Space>e` 打开或关闭项目文件浏览器、`<Space>ft` 打开项目终端、`<Space>tT` 运行项目测试、`<Space>cf` 格式化。这些快捷键要先按 `Esc` 回到普通模式。文件浏览器里用 `j` / `k` 选择、`l` 进入、`h` 返回、`L` 打开文件并关闭、`g?` 查看帮助。`:Root` 切换项目根目录，`:TinyHealth` 检查外部命令。代码位置书签用 `mA` 设置、`` `A `` 跳转、`<Space>sm` 浏览列表；大写书签退出后保留。
 
 ## 语言服务器
 

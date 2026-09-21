@@ -41,9 +41,14 @@ end
 local map = vim.keymap.set
 map('n', '<Esc>', '<cmd>nohlsearch<cr>', { desc = 'Clear search highlight' })
 map('n', '<leader>e', function()
-  local name = vim.api.nvim_buf_get_name(0)
-  require('mini.files').open(name ~= '' and name or vim.uv.cwd(), true)
-end, { desc = 'Browse files' })
+  local files = require('mini.files')
+  if files.close() ~= nil then return end
+  files.open(project_root(), false)
+  if not vim.g.nvim_tiny_files_hint then
+    vim.g.nvim_tiny_files_hint = true
+    vim.notify('文件浏览器：j/k 选择，l 进入，L 打开并关闭，h 返回，q 关闭；<Space>ff 模糊找文件')
+  end
+end, { desc = 'Toggle project files' })
 local function find_files()
   require('mini.pick').builtin.files(nil, { source = { cwd = project_root() } })
 end
