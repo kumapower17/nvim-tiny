@@ -64,7 +64,7 @@ map('n', '<leader>sh', function() require('mini.pick').builtin.help() end, { des
 
 require('mini.pick').setup()
 require('mini.extra').setup()
-require('mini.files').setup()
+require('mini.files').setup({ content = { prefix = function() end } })
 
 local function git_signs_available()
   if vim.fn.executable('git') ~= 1 then return false end
