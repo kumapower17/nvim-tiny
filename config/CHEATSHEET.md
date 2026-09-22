@@ -50,7 +50,6 @@
 | `<Space>sS` | 搜索项目符号（需要 LSP） |
 | `<Space>e` | 打开或关闭项目文件浏览器 |
 | `<Space>ft` / `Ctrl-/` | 打开或收起项目终端 |
-| `<Space>tT` | 在下方终端运行项目测试 |
 | `:Root` | 切换到项目根目录 |
 | `:e 路径` | 打开文件 |
 | `:sp` / `:vsp` | 水平 / 垂直分屏 |
@@ -81,8 +80,6 @@ Git 跟踪的文件会在行号左侧显示 `▎`（新增或修改，颜色区�
 | `<Space>cd` | 查看当前诊断 |
 
 符号选择器里直接输入名称筛选，回车跳转，`Esc` 退出。`<Space>ss` 查当前文件，`<Space>sS` 查项目；后者会随着输入向语言服务器查询。`:TinyHealth` 检查 `rg` 与语言服务器，`:checkhealth vim.lsp` 查看当前文件是否已连接。
-
-测试窗口里按 `Ctrl-\\` 后按 `Ctrl-n` 回到普通模式，再用 `Ctrl-w` 切回代码。`<Space>tT` 根据文件类型运行 `cargo test`、`go test ./...`、`npm test` 或 `python3 -m pytest`。
 
 ## 代码位置书签
 

@@ -27,6 +27,8 @@ opt.expandtab = true
 opt.updatetime = 300
 
 vim.cmd.colorscheme('morning')
+vim.api.nvim_set_hl(0, 'EndOfBuffer', { link = 'Normal' })
+opt.fillchars:append({ eob = ' ' })
 
 -- Make the vendored modules available while init.lua is being evaluated.
 local mini_path = vim.fn.stdpath('data') .. '/site/pack/vendor/start/mini.nvim'
@@ -97,7 +99,6 @@ clue.setup({
     { mode = 'n', keys = '<Leader>f', desc = 'files' },
     { mode = 'n', keys = '<Leader>s', desc = 'search' },
     { mode = 'n', keys = '<Leader>c', desc = 'code' },
-    { mode = 'n', keys = '<Leader>t', desc = 'tests' },
     clue.gen_clues.builtin_completion(),
     clue.gen_clues.g(),
     clue.gen_clues.windows(),
@@ -247,28 +248,6 @@ end
 
 vim.api.nvim_create_user_command('Format', format_buffer, { desc = 'Format current file' })
 map('n', '<leader>cf', format_buffer, { desc = 'Format current file' })
-
-local function project_test()
-  local ft = vim.bo.filetype
-  local root = project_root()
-  local cmd
-  if ft == 'rust' then cmd = { 'cargo', 'test' }
-  elseif ft == 'go' then cmd = { 'go', 'test', './...' }
-  elseif vim.tbl_contains({ 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' }, ft) then cmd = { 'npm', 'test' }
-  elseif ft == 'python' then cmd = { 'python3', '-m', 'pytest' }
-  end
-  if not cmd or vim.fn.executable(cmd[1]) == 0 then
-    vim.notify('No test command for this file. See :TinyHealth', vim.log.levels.WARN)
-    return
-  end
-  vim.cmd('botright 12split')
-  vim.cmd('enew')
-  vim.fn.termopen(cmd, { cwd = root })
-  vim.cmd('startinsert')
-end
-
-vim.api.nvim_create_user_command('ProjectTest', project_test, { desc = 'Run project tests in a terminal split' })
-map('n', '<leader>tT', project_test, { desc = 'Run project tests' })
 
 -- Neovim 0.11+ has a built-in LSP client. Each server starts only for its filetype.
 local servers = {
