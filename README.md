@@ -17,7 +17,7 @@ bash install.sh
 
 更新时在仓库运行 `git pull`，再运行 `bash install.sh --force`。仓库中 `vendor/mini.nvim` 固定为 [mini.nvim v0.18.0](https://github.com/nvim-mini/mini.nvim/releases/tag/v0.18.0) 的七个模块和对应帮助文档，许可证保留在 [vendor/mini.nvim/LICENSE](vendor/mini.nvim/LICENSE)。
 
-首次打开运行 `:Tutor` 学键位，之后运行 `:Keys` 打开[中文速查表](config/CHEATSHEET.md)。按空格、`g`、`z` 或 `Ctrl-w` 后稍停会出现后续键位提示。常用入口与 [LazyVim 键位](https://www.lazyvim.org/keymaps) 对齐：`<Space>ff` 模糊找文件、`<Space>sg` 搜内容、`<Space>ss` 搜当前文件符号、`<Space>sS` 搜项目符号、`<Space>e` 打开或关闭项目文件浏览器、`<Space>ft` 打开项目终端、`<Space>cf` 格式化。这些快捷键要先按 `Esc` 回到普通模式。文件浏览器里用 `j` / `k` 选择、`l` 进入、`h` 返回、`L` 打开文件并关闭、`g?` 查看帮助。`:Root` 切换项目根目录，`:TinyHealth` 检查外部命令。代码位置书签用 `mA` 设置、`` `A `` 跳转、`<Space>sm` 浏览列表；大写书签退出后保留。
+想尽快开始写代码，先看[日常开发快速入门](config/CHEATSHEET.md)：按顺序完成找文件、修改、搜索、查看诊断和保存。在 Neovim 里运行 `:Keys` 可随时打开这份指南。`<Space>ff` 找文件、`<Space>sg` 搜内容、`<Space>e` 浏览目录、`<Space>cf` 格式化；这些快捷键要先按 `Esc` 回到普通模式。键位与 [LazyVim](https://www.lazyvim.org/keymaps) 的常用入口接近。系统练习 Vim 原生操作时再运行 `:Tutor`。
 
 ## 语言服务器
 
@@ -29,8 +29,9 @@ bash install.sh
 | Go | `gopls` | Go 工具链的 gopls |
 | JavaScript / TypeScript | `typescript-language-server` | npm 包 `typescript-language-server` 与 `typescript` |
 | Python | `pyright-langserver` | npm 包 `pyright` |
+| Bash / Shell | `bash-language-server` | npm 包 `bash-language-server` |
 
-这些语言服务器可按需从各语言的工具链或包管理器安装。Node.js 与 Python 的语言服务器需要 Node.js；`gopls` 和 `rust-analyzer` 可能需要项目依赖或工具链在本机可用。符号搜索需要对应语言服务器连接当前文件；没有语言服务器时，文件编辑、基本语法高亮、文件与文本搜索、窗口和帮助仍能使用。`:checkhealth vim.lsp` 可确认当前文件是否连接到服务器。插入模式会延迟 250 ms 显示补全，也可用 `Ctrl-x Ctrl-o` 手动请求 LSP 补全。
+这些语言服务器可按需从各语言的工具链或包管理器安装。Node.js、Python 和 Bash 的语言服务器需要 Node.js；`bash-language-server` 当前需要 Node.js 20+，可用 `npm i -g bash-language-server` 安装。`ShellCheck` 可选，用于 Shell 代码检查；`shfmt` 可选，用于格式化。`gopls` 和 `rust-analyzer` 可能需要项目依赖或工具链在本机可用。符号搜索需要对应语言服务器连接当前文件；没有语言服务器时，文件编辑、基本语法高亮、文件与文本搜索、窗口和帮助仍能使用。`:checkhealth vim.lsp` 可确认当前文件是否连接到服务器。插入模式会延迟 250 ms 显示补全，也可用 `Ctrl-x Ctrl-o` 手动请求 LSP 补全。
 
 Git 跟踪的文件会在行号左侧显示新增、修改、删除的标记。此功能需要 Git 2.38+；标记以 Git 暂存区为基准，已暂存的改动不再显示。Git 版本不满足时，其他编辑功能照常工作，`:TinyHealth` 会说明原因。
 

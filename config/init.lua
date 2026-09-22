@@ -109,7 +109,7 @@ clue.setup({
 vim.api.nvim_create_user_command('Keys', function()
   local path = vim.fn.stdpath('config') .. '/CHEATSHEET.md'
   vim.cmd('tabnew ' .. vim.fn.fnameescape(path))
-end, { desc = 'Open the Chinese key cheatsheet' })
+end, { desc = 'Open the Chinese quickstart guide' })
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'json', 'html', 'css' },
@@ -271,6 +271,11 @@ local servers = {
     filetypes = { 'python' },
     root_markers = { 'pyproject.toml', 'setup.py', 'requirements.txt', '.git' },
   },
+  bashls = {
+    cmd = { 'bash-language-server', 'start' },
+    filetypes = { 'bash', 'sh' },
+    root_markers = { '.git' },
+  },
 }
 
 for name, config in pairs(servers) do
@@ -306,7 +311,7 @@ map('n', '<leader>cd', vim.diagnostic.open_float, { desc = 'Show diagnostic' })
 vim.api.nvim_create_user_command('TinyHealth', function()
   local version = vim.version()
   local lines = { ('Neovim %d.%d.%d'):format(version.major, version.minor, version.patch), 'rg: ' .. (vim.fn.executable('rg') == 1 and 'ok' or 'missing'), 'Git line signs: ' .. (git_signs_ok and 'ready' or 'needs Git 2.38+') }
-  for _, name in ipairs({ 'rust_analyzer', 'gopls', 'ts_ls', 'pyright' }) do
+  for _, name in ipairs({ 'rust_analyzer', 'gopls', 'ts_ls', 'pyright', 'bashls' }) do
     local config = servers[name]
     lines[#lines + 1] = name .. ': ' .. (vim.fn.executable(config.cmd[1]) == 1 and 'ok' or 'missing')
   end
