@@ -253,44 +253,71 @@ map('n', '<leader>cf', format_buffer, { desc = 'Format current file' })
 local servers = {
   rust_analyzer = {
     cmd = { 'rust-analyzer' },
+    check = { 'rust-analyzer', '--version' },
     filetypes = { 'rust' },
     root_markers = { 'Cargo.toml', 'rust-project.json', '.git' },
   },
   gopls = {
     cmd = { 'gopls' },
+    check = { 'gopls', 'version' },
     filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
     root_markers = { 'go.work', 'go.mod', '.git' },
   },
   ts_ls = {
     cmd = { 'typescript-language-server', '--stdio' },
+    check = { 'typescript-language-server', '--version' },
     filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
     root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
   },
   pyright = {
     cmd = { 'pyright-langserver', '--stdio' },
+    check = { 'pyright-langserver', '--version' },
     filetypes = { 'python' },
     root_markers = { 'pyproject.toml', 'setup.py', 'requirements.txt', '.git' },
   },
   bashls = {
     cmd = { 'bash-language-server', 'start' },
+    check = { 'bash-language-server', '--version' },
     filetypes = { 'bash', 'sh' },
     root_markers = { '.git' },
   },
 }
 
+local server_status = {}
 for name, config in pairs(servers) do
+  local available = false
   if vim.fn.executable(config.cmd[1]) == 1 then
-    vim.lsp.config(name, config)
+    local result = vim.system(config.check, { text = true }):wait(5000)
+    available = result.code == 0
+  end
+  server_status[name] = available
+  if available then
+    local lsp_config = vim.deepcopy(config)
+    lsp_config.check = nil
+    vim.lsp.config(name, lsp_config)
     vim.lsp.enable(name)
   end
 end
 
-local function search_symbols(scope, method)
-  if #vim.lsp.get_clients({ bufnr = 0, method = method }) == 0 then
-    vim.notify('No language server for symbol search. See :TinyHealth', vim.log.levels.WARN)
-    return
+local server_for_filetype = {}
+for name, config in pairs(servers) do
+  for _, filetype in ipairs(config.filetypes) do server_for_filetype[filetype] = name end
+end
+
+local function run_lsp_action(method, action)
+  if #vim.lsp.get_clients({ bufnr = 0, method = method }) > 0 then return action() end
+  local name = server_for_filetype[vim.bo.filetype]
+  if name then
+    local command = servers[name].cmd[1]
+    local reason = server_status[name] and 'not attached to this file' or ('missing or not runnable: ' .. command)
+    vim.notify('No LSP available for this action (' .. reason .. '). Run :TinyHealth', vim.log.levels.WARN)
+  else
+    vim.notify('No language server configured for filetype: ' .. vim.bo.filetype, vim.log.levels.WARN)
   end
-  require('mini.extra').pickers.lsp({ scope = scope })
+end
+
+local function search_symbols(scope, method)
+  run_lsp_action(method, function() require('mini.extra').pickers.lsp({ scope = scope }) end)
 end
 
 map('n', '<leader>ss', function()
@@ -300,10 +327,10 @@ map('n', '<leader>sS', function()
   search_symbols('workspace_symbol_live', 'workspace/symbol')
 end, { desc = 'Symbols in project' })
 
-map('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
-map('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
-map('n', '<leader>cr', vim.lsp.buf.rename, { desc = 'Rename symbol' })
-map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { desc = 'Code action' })
+map('n', 'gd', function() run_lsp_action('textDocument/definition', vim.lsp.buf.definition) end, { desc = 'Go to definition' })
+map('n', 'gr', function() run_lsp_action('textDocument/references', vim.lsp.buf.references) end, { desc = 'Find references' })
+map('n', '<leader>cr', function() run_lsp_action('textDocument/rename', vim.lsp.buf.rename) end, { desc = 'Rename symbol' })
+map({ 'n', 'v' }, '<leader>ca', function() run_lsp_action('textDocument/codeAction', vim.lsp.buf.code_action) end, { desc = 'Code action' })
 map('n', '[d', vim.diagnostic.goto_prev, { desc = 'Previous diagnostic' })
 map('n', ']d', vim.diagnostic.goto_next, { desc = 'Next diagnostic' })
 map('n', '<leader>cd', vim.diagnostic.open_float, { desc = 'Show diagnostic' })
@@ -313,7 +340,7 @@ vim.api.nvim_create_user_command('TinyHealth', function()
   local lines = { ('Neovim %d.%d.%d'):format(version.major, version.minor, version.patch), 'rg: ' .. (vim.fn.executable('rg') == 1 and 'ok' or 'missing'), 'Git line signs: ' .. (git_signs_ok and 'ready' or 'needs Git 2.38+') }
   for _, name in ipairs({ 'rust_analyzer', 'gopls', 'ts_ls', 'pyright', 'bashls' }) do
     local config = servers[name]
-    lines[#lines + 1] = name .. ': ' .. (vim.fn.executable(config.cmd[1]) == 1 and 'ok' or 'missing')
+    lines[#lines + 1] = name .. ': ' .. (server_status[name] and 'ok' or ('missing or not runnable: ' .. config.cmd[1]))
   end
   lines[#lines + 1] = 'Project root: ' .. project_root()
   vim.notify(table.concat(lines, '\n'))
